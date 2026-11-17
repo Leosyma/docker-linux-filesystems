@@ -1,14 +1,13 @@
-# Data Science Academy
 # Administração de Sistema Operacional Linux com Docker e Kubernetes
 # Lab 3 - Trabalhando com Sistema de Arquivos (File System) com Docker e Linux
 
 # 1- Bind Mount (LEMBRE-SE DE ALTERAR "C:\path\to\shared-folder" PARA UMA PASTA NO SEU COMPUTADOR. NO WINDOWS USE CONTRA-BARRA AO INVÉS DE BARRA.)
 
 # Criando um container e montando um diretório do host usando bind mount
-docker run -it --name lab3-exemplo1 --mount type=bind,source=C:\path\to\shared-folder,target=/mnt/dsacademy ubuntu
+docker run -it --name lab3-exemplo1 --mount type=bind,source=C:\path\to\shared-folder,target=/mnt/shared ubuntu
 
 # Acessando o diretório montado dentro do container
-cd /mnt/dsacademy
+cd /mnt/shared
 
 # Listando os arquivos do diretório
 ls
@@ -26,10 +25,10 @@ cat exemplo1.txt
 exit
 
 # Criando outro container com bind mount de forma simplificada (-v)
-docker run -it --name lab3-exemplo2 -v C:\path\to\shared-folder:/mnt/dsacademy ubuntu
+docker run -it --name lab3-exemplo2 -v C:\path\to\shared-folder:/mnt/shared ubuntu
 
 # Acessando o diretório montado
-cd /mnt/dsacademy
+cd /mnt/shared
 
 # Listando arquivos, incluindo ocultos
 ls -la
@@ -53,44 +52,44 @@ docker ps -a
 docker container start lab3-exemplo1
 docker container start lab3-exemplo2
 
-# Criando um volume chamado 'ds_academy'
-docker volume create ds_academy
+# Criando um volume chamado 'lab_volume'
+docker volume create lab_volume
 
 # Listando todos os volumes disponíveis
 docker volume list
 
 # Exibindo detalhes do volume criado
-docker volume inspect ds_academy
+docker volume inspect lab_volume
 
 # Criando um container e montando um volume
-docker run -it --name=lab3-exemplo3 --mount source=ds_academy,destination=/mnt/dsacademy ubuntu
+docker run -it --name=lab3-exemplo3 --mount source=lab_volume,destination=/mnt/shared ubuntu
 
 # Acessando o diretório montado dentro do container
-cd /mnt/dsacademy
+cd /mnt/shared
 
 # Criando um arquivo dentro do volume
-echo "Testando Docker File System no Container exemplo3" > testedsa.txt
+echo "Testando Docker File System no Container exemplo3" > teste.txt
 
 # Exibindo o conteúdo do arquivo
-cat testedsa.txt
+cat teste.txt
 
 # Saindo do container
 exit
 
 # Criando outro container para acessar o mesmo volume
-docker run -it --name=lab3-exemplo4 --mount source=ds_academy,destination=/mnt/dsacademy ubuntu
+docker run -it --name=lab3-exemplo4 --mount source=lab_volume,destination=/mnt/shared ubuntu
 
 # Acessando o diretório do volume
-cd /mnt/dsacademy
+cd /mnt/shared
 
 # Listando arquivos e suas permissões
 ls -la
 
-# Adicionando uma nova linha ao arquivo testedsa.txt
-echo "Testando Docker File System no Container exemplo4" >> testedsa.txt
+# Adicionando uma nova linha ao arquivo teste.txt
+echo "Testando Docker File System no Container exemplo4" >> teste.txt
 
 # Exibindo o conteúdo do arquivo atualizado
-cat testedsa.txt
+cat teste.txt
 
 # Saindo do container
 exit
@@ -117,16 +116,16 @@ docker rm -f lab3-exemplo4
 docker rmi ubuntu
 
 # Removendo o volume criado após deletar os containers
-docker volume rm ds_academy
+docker volume rm lab_volume
 
 # Criando um novo container e montando um diretório do host
-docker run -dit --name dsa-container-lab3 --mount type=bind,source=C:\path\to\shared-folder,target=/mnt/dsacademy ubuntu
+docker run -dit --name container-lab3 --mount type=bind,source=C:\path\to\shared-folder,target=/mnt/shared ubuntu
 
 # Acessando o container em execução
-docker exec -it dsa-container-lab3 /bin/bash
+docker exec -it container-lab3 /bin/bash
 
 # Navegando até o diretório montado
-cd /mnt/dsacademy
+cd /mnt/shared
 
 # Listando arquivos de texto no diretório
 ls -la *.txt
@@ -137,32 +136,32 @@ find /mnt -name "*.txt"
 # Procurando por diretórios chamados 'docs' dentro de /mnt
 find /mnt -type d -name "docs"
 
-# Buscando diretórios chamados 'dsacademy' em todo o sistema
-find / -type d -name "dsacademy"
+# Buscando diretórios chamados 'shared' em todo o sistema
+find / -type d -name "shared"
 
-# Listando arquivos maiores que 10MB dentro de /mnt/dsacademy
-find /mnt/dsacademy -type f -size +10M
+# Listando arquivos maiores que 10MB dentro de /mnt/shared
+find /mnt/shared -type f -size +10M
 
 # Criando um arquivo e adicionando um texto
-echo "Testando Docker File System com a Data Science Academy" > /mnt/dsacademy/testedsa.txt
+echo "Testando Docker File System" > /mnt/shared/teste.txt
 
 # Buscando a palavra 'Docker' dentro do arquivo
-grep "Docker" /mnt/dsacademy/testedsa.txt
+grep "Docker" /mnt/shared/teste.txt
 
 # Buscando a palavra 'Teste' dentro do arquivo
-grep "Teste" /mnt/dsacademy/testedsa.txt
+grep "Teste" /mnt/shared/teste.txt
 
 # Verificando o uso do espaço em disco
 df -h
 
 # Verificando o tamanho total do diretório montado
-du -sh /mnt/dsacademy/
+du -sh /mnt/shared/
 
 # Exibindo o tamanho dos subdiretórios dentro de /mnt
 du -h --max-depth=1 /mnt
 
 # Exibindo detalhes do arquivo criado
-stat /mnt/dsacademy/testedsa.txt
+stat /mnt/shared/teste.txt
 
 # Saindo do container
 exit
